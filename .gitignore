@@ -1,0 +1,27 @@
+/target
+node_modules/
+sidecars/claude/node_modules/
+sidecars/claude/dist/
+.DS_Store
+
+# Repo docs for people and agents (overrides a global ignore)
+!AGENTS.md
+!CLAUDE.md
+.superpowers/
+/spikes/*/target
+
+# Local design files hold real data
+*.figcraft
+
+# Local coordination board and code index
+coord/
+.codegraph/
+
+# The lead skill is part of the repository (a global ignore hides .claude/); local settings are not
+!.claude/
+.claude/*
+!.claude/skills/
+
+# Markdown stays local except the README
+*.md
+!README.md
