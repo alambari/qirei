@@ -58,6 +58,9 @@ fi
 for entry in "${LANES[@]}"; do
   path="$ROOT/../qirei-${entry%%:*}"
   git worktree add -b "lane/${entry#*:}" "$path" main
+  # Markdown other than README is git-ignored, so a worktree does not get it from git: copy the local files.
+  rsync -a --include='*/' --include='*.md' --exclude='*' --exclude='node_modules/' --exclude='target/' --exclude='coord/' \
+    --prune-empty-dirs "$ROOT/" "$path/"
 done
 
 echo
