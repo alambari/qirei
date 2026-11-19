@@ -90,20 +90,21 @@ side effect. The app's terminal engine is the `terminal-vt` crate, built on libg
 ## Build and run
 
 Planned requirements: macOS and Rust (edition 2024). **Qirei runs on macOS only.** The daemon relies on four
-things macOS provides: the Seatbelt sandbox (`sandbox-exec`) that confines every agent run, the Keychain that holds
-the API token, launchd as the service manager (`qireid install-agent`), and permission rules that read shell
+things macOS provides: the Seatbelt sandbox (`sandbox-exec`) that confines every agent run, launchd as the service manager (`qireid install-agent`), and permission rules that read shell
 commands as POSIX shell. Without a sandbox launcher the daemon refuses to run agents rather than run them unconfined.
-Every platform specific location or program (the sandbox launcher, the Keychain and service folders, the home-relative
+Every platform specific location or program (the sandbox launcher, the service folders, the home-relative
 secret folders, the group database) is named in one module, `crates/local/src/platform.rs`, and nowhere else;
 `scripts/platform-boundary.sh` and a Rust test fail when a system path appears elsewhere (see ARCHITECTURE.md, "System
 locations and how to override them" and "Towards other platforms"). The agent sandbox has been tested on macOS 26 only;
 on another version a rejected profile keeps agent runs off, and nothing else is known. `scripts/dev.sh` also needs
 [watchexec](https://github.com/watchexec/watchexec) (`brew install watchexec`). Agent runs need Node.js 26 (for the
-sidecar, see `sidecars/claude/README.md`) and a Claude API key in a mode-0600 file named by `[agent] credential_file`;
-without them the daemon starts with agent runs off. Zig is needed to build the terminal library. The integrations are
-optional and off until configured: GitLab needs `[gitlab]` and a token file, Lark needs `lark-cli` on the daemon's
-`PATH` and a `[lark]` table (and `[lark.bot]` for the bot), and the read path needs `[readpath]` with a private
-credential file.
+sidecar, see `sidecars/claude/README.md`) and a Claude API key or setup token in a mode-0600 file in `~/Library/Application Support/Qirei/secrets/`
+(`claude-api-key` or `claude-setup-token`, written from Settings or by hand); without them the daemon starts with agent runs off. Zig is needed to build the terminal library. The integrations are
+optional and off until configured: GitLab needs the `gitlab` object in `config.json` and the token file `secrets/gitlab`, Lark needs `lark-cli` on the
+daemon's `PATH` and a `lark` object (and `lark.bot` for the bot), and the read path needs `readpath` with the private
+file `secrets/readpath.env`. Configuration is `~/.config/qirei/config.json` (JSONC, edited by you, never written by the
+daemon, reloaded when it changes); the few preferences the app saves (theme, language, notifications, terminal font)
+go to `prefs.json`. Nothing is configured in the database and no secret is in the Keychain.
 
 | Command | What it does |
 |---|---|
@@ -120,7 +121,7 @@ credential file.
 ## Your workflow stays yours
 
 Ticket key formats, board columns, which skill runs at which moment, folder layouts and data sources are all
-configuration in `~/.config/qirei/config.toml`. The repository contains no workflow of any specific team.
+configuration in `~/.config/qirei/config.json`. The repository contains no workflow of any specific team.
 
 ## Contributing
 
